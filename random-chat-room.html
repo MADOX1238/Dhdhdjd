@@ -1,0 +1,107 @@
+<!doctype html>
+<html lang="ar">
+ <head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>غرفة الدردشة العشوائية</title>
+  <style>
+        body {
+            font-family: Arial, sans-serif;
+            text-align: center;
+            margin-top: 50px;
+            background-image: url('https://i.pinimg.com/originals/0b/59/34/0b5934b623f3c6f5377f221959d77982.gif');
+            background-size: cover;
+            background-position: center;
+            background-attachment: fixed;
+            height: 100vh;
+            color: white;
+        }
+        h1 {
+            font-size: 60px;
+            font-weight: bold;
+            letter-spacing: 2px;
+            margin-bottom: 40px;
+        }
+        .message-box {
+            width: 80%;
+            height: 300px;
+            margin-bottom: 20px;
+            background-color: rgba(0, 0, 0, 0.6);
+            border-radius: 5px;
+            padding: 10px;
+            overflow-y: scroll;
+        }
+        input {
+            padding: 10px;
+            font-size: 18px;
+            width: 80%;
+            margin-bottom: 10px;
+            background-color: rgba(0, 0, 0, 0.6);
+            color: white;
+            border: none;
+            border-radius: 5px;
+        }
+        button {
+            padding: 10px 20px;
+            background-color: #28a745;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            font-size: 18px;
+            cursor: pointer;
+        }
+    </style>
+ </head>
+ <body>
+  <h1>غرفة الدردشة العشوائية</h1>
+  <div class="message-box" id="messagesBox"></div>
+  <input type="text" id="messageInput" placeholder="اكتب رسالتك هنا">
+  <button id="sendMessageBtn">إرسال</button>
+
+  <script src="https://www.gstatic.com/firebasejs/11.0.2/firebase-app.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/11.0.2/firebase-database.js"></script>
+
+  <script>
+        // إعدادات Firebase
+        const firebaseConfig = {
+            apiKey: "AIzaSyCnHSUo_Vu53NidFWYlQ74_CyOyfVW_BqQ",
+            authDomain: "alaah-8d503.firebaseapp.com",
+            databaseURL: "https://alaah-8d503-default-rtdb.firebaseio.com",
+            projectId: "alaah-8d503",
+            storageBucket: "alaah-8d503.firebasestorage.app",
+            messagingSenderId: "365922482892",
+            appId: "1:365922482892:web:a843fbb3594d200c67e069",
+            measurementId: "G-D4TPJW4RT8"
+        };
+        // Initialize Firebase
+        const app = firebase.initializeApp(firebaseConfig);
+        const database = firebase.database();
+
+        const messagesBox = document.getElementById('messagesBox');
+        const messageInput = document.getElementById('messageInput');
+        const sendMessageBtn = document.getElementById('sendMessageBtn');
+
+        // إضافة رسالة جديدة
+        sendMessageBtn.addEventListener('click', function() {
+            const message = messageInput.value.trim();
+            if (message !== "") {
+                const username = sessionStorage.getItem("username");
+                database.ref('random-chat-room').push({
+                    username: username,
+                    message: message
+                });
+                messageInput.value = "";
+            }
+        });
+
+        // تحديث الرسائل
+        database.ref('random-chat-room').on('child_added', function(snapshot) {
+            const messageData = snapshot.val();
+            const messageElement = document.createElement('div');
+            messageElement.textContent = messageData.username + ": " + messageData.message;
+            messagesBox.appendChild(messageElement);
+            messagesBox.scrollTop = messagesBox.scrollHeight;
+        });
+    </script>
+ 
+</body></html>
